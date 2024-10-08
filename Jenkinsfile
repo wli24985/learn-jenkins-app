@@ -6,7 +6,7 @@ pipeline {
                 docker {
                     image 'node:18-alpine' // was node:18
                     reuseNode true
-                    args '-u root:root'
+                    //args '-u root:root'
                 }
             }
             steps {
@@ -15,10 +15,9 @@ pipeline {
                     node --version
                     npm --version
                     npm ci
+                    npm run build
+                    ls -la
                 '''
-                //     npm run build
-                //     ls -la
-                // '''
             }
         }
         // stage('Test'){
