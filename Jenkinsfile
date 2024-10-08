@@ -6,18 +6,21 @@ pipeline {
                 docker {
                     image 'node:18-alpine' // was node:18
                     reuseNode true
-                    //args '-u root:root'
+                    args '-u root:root'
                 }
             }
             steps {
                 sh '''
-                    ls -la
-                    node --version
-                    npm --version
-                    npm ci
-                    npm run build
-                    ls -la
+                    npm cache clean --force
                 '''
+                // sh '''
+                //     ls -la
+                //     node --version
+                //     npm --version
+                //     npm ci
+                //     npm run build
+                //     ls -la
+                // '''
             }
         }
         // stage('Test'){
