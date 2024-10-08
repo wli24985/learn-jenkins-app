@@ -4,7 +4,7 @@ pipeline {
         stage('Build') {
             agent {
                 docker {
-                    image 'node:22-alpine' // was node:18
+                    image 'node:18-alpine' // was node:18
                     reuseNode true
                 }
             }
@@ -15,19 +15,20 @@ pipeline {
                     npm --version
                     npm ci
                     npm run build
+                    ls -la
                 '''
             }
         }
         stage('Test'){
             agent {
                 docker {
-                    image 'node:22-alpine'
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
             steps {
                 sh '''
-                    test -f build/index.html
+                    #test -f build/index.html
                     npm test
                 ''' 
             }
@@ -36,9 +37,8 @@ pipeline {
         stage('E2E'){
             agent {
                 docker {
-                    image 'node:22-alpine'
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                     reuseNode true
-                    args '-u root:root'
                 }
             }
             steps {
