@@ -11,7 +11,7 @@ pipeline {
             }
             steps {
                 sh '''
-                    rmdir /var/jenkins_home/workspace/learn jekins app/node_modules/@aashutoshrathi/word-wrap
+                    rmdir "/var/jenkins_home/workspace/learn jekins app/node_modules/@aashutoshrathi/word-wrap"
                     #npm cache clean --force
                 '''
                 // sh '''
