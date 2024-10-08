@@ -42,11 +42,11 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                    npx playwright install
+                //npx playwright install
+                sh '''                   
                     npm install serve                 
                     node_modules/.bin/serve -s build &
-                    sleep 20
+                    sleep 40
                     npx playwright test
                 ''' 
             }
