@@ -11,6 +11,7 @@ pipeline {
             }
             steps {
                 // sh '''
+                //     # for cleaning build files
                 //     rm -rf '/var/jenkins_home/workspace/learn jekins app/build'
                 //     rm -rf "/var/jenkins_home/workspace/learn jekins app/node_modules"
                 //     #npm cache clean --force
@@ -25,21 +26,21 @@ pipeline {
                 '''
             }
         }
-        // stage('Test'){
-        //     agent {
-        //         docker {
-        //             image 'node:18-alpine'
-        //             reuseNode true
-        //         }
-        //     }
-        //     steps {
-        //         sh '''
-        //             #test -f build/index.html
-        //             npm test
-        //         ''' 
-        //     }
+        stage('Test'){
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    #test -f build/index.html
+                    npm test
+                ''' 
+            }
             
-        // }
+        }
     //     stage('E2E'){
     //         agent {
     //             docker {
@@ -59,9 +60,9 @@ pipeline {
             
     //     }
     }
-    // post {
-    //     always {
-    //         junit 'tjest-results/junit.xml'
-    //     }
-    // }
+    post {
+        always {
+            junit 'tjest-results/junit.xml'
+        }
+    }
 }
