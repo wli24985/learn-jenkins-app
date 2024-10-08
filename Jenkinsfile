@@ -6,7 +6,7 @@ pipeline {
                 docker {
                     image 'node:18-alpine' // was node:18
                     reuseNode true
-                    //args '-u root:root'
+                    args '-u root:root'
                 }
             }
             steps {
@@ -23,21 +23,21 @@ pipeline {
                 '''
             }
         }
-        // stage('Test'){
-        //     agent {
-        //         docker {
-        //             image 'node:18-alpine'
-        //             reuseNode true
-        //         }
-        //     }
-        //     steps {
-        //         sh '''
-        //             #test -f build/index.html
-        //             npm test
-        //         ''' 
-        //     }
+        stage('Test'){
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh '''
+                    #test -f build/index.html
+                    npm test
+                ''' 
+            }
             
-        // }
+        }
     //     stage('E2E'){
     //         agent {
     //             docker {
