@@ -12,7 +12,7 @@ pipeline {
             steps {
                 sh '''
                     rm -rf '/var/jenkins_home/workspace/learn jekins app/build'
-                    #rm -rf "/var/jenkins_home/workspace/learn jekins app/node_modules"
+                    rm -rf "/var/jenkins_home/workspace/learn jekins app/node_modules"
                     #npm cache clean --force
                 '''
                 // sh '''
