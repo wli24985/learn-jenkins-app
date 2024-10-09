@@ -55,7 +55,7 @@ pipeline {
                 sh '''                   
                     npm install serve                 
                     node_modules/.bin/serve -s build &
-                    sleep 40
+                    sleep 20
                     npx playwright test --reporter=html
                 ''' 
             }
@@ -65,6 +65,7 @@ pipeline {
     post {
         always {
             junit 'tjest-results/junit.xml'
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
         }
     }
 }
