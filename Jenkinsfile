@@ -3,7 +3,8 @@ pipeline {
 
     environment {
         NETLIFY_SITE_ID = '7550f1e5-9ea3-4e27-a3c6-1871c7c112da'
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+        //Bellow token created in netlify and saved in Jenkins Dashboard -> Manage Jenkins -> Credentials -> System -> Global credentials (unrestricted)
+        NETLIFY_AUTH_TOKEN = credentials('netlify-token')  
     }
     stages {
         /*
@@ -68,14 +69,14 @@ pipeline {
                         sh '''                   
                             npm install serve                 
                             node_modules/.bin/serve -s build &
-                            sleep 20
+                            sleep 10
                             npx playwright test --reporter=html
                         ''' 
                     }
 
                     post {
                         always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright Local', reportTitles: '', useWrapperFileDirectly: true])
                         }
                     }
                     
@@ -98,6 +99,32 @@ pipeline {
                     node_modules/.bin/netlify deploy --dir=build --prod
                 '''
             }
+        }
+        stage('Prod E2E'){
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+            environment {
+                NETLIFY_SITE_ID = '7550f1e5-9ea3-4e27-a3c6-1871c7c112da'
+                NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+                CI_ENVIRONMENT_URL = 'https://exquisite-toffee-ec4866.netlify.app'
+            }
+            steps {
+                //npx playwright install
+                sh '''                   
+                    npx playwright test --reporter=html
+                ''' 
+            }
+
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E', reportTitles: '', useWrapperFileDirectly: true])
+                }
+            }
+            
         }
     }
     post {
