@@ -138,24 +138,24 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Prod') {
-            agent {
-                docker {
-                    image 'node:18-alpine' 
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    #npm install netlify-cli
-                    #node_modules/.bin/netlify --version
-                    echo "Deploying to production with site ID $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
-                '''
-            }
-        }
-        stage('Prod E2E'){
+        // stage('Deploy Prod') {
+        //     agent {
+        //         docker {
+        //             image 'node:18-alpine' 
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //             #npm install netlify-cli
+        //             #node_modules/.bin/netlify --version
+        //             echo "Deploying to production with site ID $NETLIFY_SITE_ID"
+        //             node_modules/.bin/netlify status
+        //             node_modules/.bin/netlify deploy --dir=build --prod
+        //         '''
+        //     }
+        // }
+        stage('Deploy Prod w E2E'){
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -163,13 +163,17 @@ pipeline {
                 }
             }
             environment {
-                NETLIFY_SITE_ID = '7550f1e5-9ea3-4e27-a3c6-1871c7c112da'
-                NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+                // NETLIFY_SITE_ID = '7550f1e5-9ea3-4e27-a3c6-1871c7c112da'
+                // NETLIFY_AUTH_TOKEN = credentials('netlify-token')
                 CI_ENVIRONMENT_URL = 'https://exquisite-toffee-ec4866.netlify.app'
             }
             steps {
                 //npx playwright install
-                sh '''                   
+                sh '''
+                    echo "Deploying to production with site ID $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --prod
+                    sleep 10                   
                     npx playwright test --reporter=html
                 ''' 
             }
