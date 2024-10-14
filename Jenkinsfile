@@ -121,13 +121,12 @@ pipeline {
                     npm install netlify-cli node-jq
                     node_modules/.bin/netlify --version
                     echo "Deploying to staging with site ID $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status                    
-                    CI_ENVIRONMENT_URL=$(node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json)
-                    #node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
+                    node_modules/.bin/netlify status
+                    node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json                    
+                    CI_ENVIRONMENT_URL = $(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
                     npx playwright test --reporter=html
                 '''
             }
-
             post {
                 always {
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Staging E2E', reportTitles: '', useWrapperFileDirectly: true])
