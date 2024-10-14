@@ -3,9 +3,9 @@ pipeline {
 
     environment {
         NETLIFY_SITE_ID = '7550f1e5-9ea3-4e27-a3c6-1871c7c112da'
-        //Bellow token created in netlify and saved in Jenkins Dashboard -> Manage Jenkins -> Credentials -> System -> Global credentials (unrestricted)
+        //netlify-token created in netlify and saved in Jenkins Dashboard -> Manage Jenkins -> Credentials -> System -> Global credentials (unrestricted)
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
-        REACT_APP_VERSION = '1.2.3'
+        REACT_APP_VERSION = "1.0.$BUILD_ID"
     }
     stages {
         stage('Build') {
