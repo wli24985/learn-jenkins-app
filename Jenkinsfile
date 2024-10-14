@@ -4,10 +4,10 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = '7550f1e5-9ea3-4e27-a3c6-1871c7c112da'
         //Bellow token created in netlify and saved in Jenkins Dashboard -> Manage Jenkins -> Credentials -> System -> Global credentials (unrestricted)
-        NETLIFY_AUTH_TOKEN = credentials('netlify-token')  
+        NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+        REACT_APP_VERSION = '1.2.3'
     }
     stages {
-        /*
         stage('Build') {
             agent {
                 docker {
@@ -83,29 +83,6 @@ pipeline {
                 }
             }
         }
-        
-        stage('Deploy Staging w E2E') {
-            agent {
-                docker {
-                    image 'node:18-alpine' 
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    npm install netlify-cli node-jq
-                    node_modules/.bin/netlify --version
-                    echo "Deploying to staging with site ID $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                    node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
-                '''
-                script {
-                    env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
-                }
-            }
-        }
-        */
         stage('Deploy Staging w E2E'){
             agent {
                 docker {
@@ -124,6 +101,7 @@ pipeline {
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json                    
                     CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
+                    #no spaces around the URL=$ above!
                     npx playwright test --reporter=html
                 '''
             }
@@ -134,13 +112,15 @@ pipeline {
             }
             
         }
+        /* by default time out value is minute
         stage('Approval') {
             steps {
-                timeout(1) {
+                timeout(10) {
                     input message: 'Do you wich to deploy to production?', ok: 'Yes, I am sure I want to deploy.'
                 }
             }
         }
+        */
         stage('Deploy Prod w E2E'){
             agent {
                 docker {
