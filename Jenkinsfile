@@ -83,8 +83,8 @@ pipeline {
                 }
             }
         }
-        */
-        stage('Deploy Staging') {
+        
+        stage('Deploy Staging w E2E') {
             agent {
                 docker {
                     image 'node:18-alpine' 
@@ -105,7 +105,8 @@ pipeline {
                 }
             }
         }
-        stage('Staging E2E'){
+        */
+        stage('Deploy Staging w E2E'){
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
@@ -113,15 +114,18 @@ pipeline {
                 }
             }
             environment {
-                // NETLIFY_SITE_ID = '7550f1e5-9ea3-4e27-a3c6-1871c7c112da'
-                // NETLIFY_AUTH_TOKEN = credentials('netlify-token')
-                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+                CI_ENVIRONMENT_URL = 'STAGING_URL_TO_BE_SET'
             }
             steps {
-                //npx playwright install
-                sh '''                   
+                sh '''
+                    npm install netlify-cli node-jq
+                    node_modules/.bin/netlify --version
+                    echo "Deploying to staging with site ID $NETLIFY_SITE_ID"
+                    node_modules/.bin/netlify status                    
+                    CI_ENVIRONMENT_URL = $(node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json)
+                    #node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
                     npx playwright test --reporter=html
-                ''' 
+                '''
             }
 
             post {
@@ -138,23 +142,6 @@ pipeline {
                 }
             }
         }
-        // stage('Deploy Prod') {
-        //     agent {
-        //         docker {
-        //             image 'node:18-alpine' 
-        //             reuseNode true
-        //         }
-        //     }
-        //     steps {
-        //         sh '''
-        //             #npm install netlify-cli
-        //             #node_modules/.bin/netlify --version
-        //             echo "Deploying to production with site ID $NETLIFY_SITE_ID"
-        //             node_modules/.bin/netlify status
-        //             node_modules/.bin/netlify deploy --dir=build --prod
-        //         '''
-        //     }
-        // }
         stage('Deploy Prod w E2E'){
             agent {
                 docker {
