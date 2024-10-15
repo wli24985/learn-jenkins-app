@@ -39,6 +39,7 @@ pipeline {
             agent {
                 docker {
                     image 'amazon/aws-cli:latest'
+                    reuseNode true
                     args "--entrypoint=''"
                 }
             }
@@ -55,7 +56,7 @@ pipeline {
                 
             }
         }
-        
+
         stage('Tests'){
             parallel {
                 stage('Unit Tests'){
