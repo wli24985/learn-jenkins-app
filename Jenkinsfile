@@ -10,8 +10,10 @@ pipeline {
     stages {
 
         stage('AWS') {
-            docker {
-                image 'amazon/aws-cli:latest'
+            agent {
+                docker {
+                    image 'amazon/aws-cli:latest'
+                }
             }
             steps {
                 sh '''
