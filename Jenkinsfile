@@ -17,10 +17,10 @@ pipeline {
                 }
             }
             environment {
-                AWS_S3_BUCKET = 'AWS_SECRET_ACCESS_KEY'
+                AWS_S3_BUCKET = 'learn-jenkins-wenyi'
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'my-awsID', passwordVariable: '', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                withCredentials([usernamePassword(credentialsId: 'my-awsID', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
                         aws --version
                         echo "Hello S3!" > index.html
