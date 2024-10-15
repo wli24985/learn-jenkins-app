@@ -8,6 +8,11 @@ pipeline {
         REACT_APP_VERSION = "1.0.$BUILD_ID"
     }
     stages {
+        stage('Docker') {
+            steps {
+                sh 'docker build -t my-plywright .'
+            }
+        }
         stage('Build') {
             agent {
                 docker {
@@ -86,7 +91,7 @@ pipeline {
         stage('Deploy Staging w E2E'){
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    image 'my-plywright'
                     reuseNode true
                 }
             }
@@ -95,12 +100,11 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install netlify-cli node-jq
-                    node_modules/.bin/netlify --version
+                    netlify --version
                     echo "Deploying to staging with site ID $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json                    
-                    CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
+                    netlify status
+                    netlify deploy --dir=build --json > deploy-output.json                    
+                    CI_ENVIRONMENT_URL=$(node-jq -r '.deploy_url' deploy-output.json)
                     #no spaces around the URL=$ above!
                     npx playwright test --reporter=html
                 '''
@@ -124,7 +128,7 @@ pipeline {
         stage('Deploy Prod w E2E'){
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    image 'my-plywright'
                     reuseNode true
                 }
             }
@@ -137,8 +141,8 @@ pipeline {
                 //npx playwright install
                 sh '''
                     echo "Deploying to production with site ID $NETLIFY_SITE_ID"
-                    node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=build --prod
+                    netlify status
+                    netlify deploy --dir=build --prod
                     sleep 10                   
                     npx playwright test --reporter=html
                 ''' 
