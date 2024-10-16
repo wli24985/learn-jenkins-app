@@ -21,9 +21,11 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'my-awsID', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
                         aws --version
+                        sudo yam install jq -y
                         #aws s3 sync build s3://$AWS_S3_BUCKET
-                        aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json
-                        aws ecs update-service --cluster LearnJenkinsWenyi-Cluster-Prod --service LearnJenkinsApp-Service-Prod --task-definition LearnJenkinsWenyi-TaskDefinition-Prod:2
+                        LATEST_TD_REVISION = $(aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json | jq '.taskDefinition.revision')
+                        echo $LATEST_TD_REVISION
+                        aws ecs update-service --cluster LearnJenkinsWenyi-Cluster-Prod --service LearnJenkinsApp-Service-Prod --task-definition LearnJenkinsWenyi-TaskDefinition-Prod:$LATEST_TD_REVISION
                     '''
                 }
                 
