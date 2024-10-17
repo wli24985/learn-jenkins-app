@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         REACT_APP_VERSION = "1.0.$BUILD_ID"
+        APP_NAME = 'myjekinsapp'
         AWS_DEFAULT_REGION = 'us-east-2'
         AWS_ECS_CLUSTER = 'LearnJenkinsWenyi-Cluster-Prod'
         AWS_ECS_SERVICE_PROD = 'LearnJenkinsApp-Service-Prod'
@@ -45,7 +46,7 @@ pipeline {
             steps {
                 sh '''
                     #amazon-linux-extras install docker
-                    docker build -t myjekinsapp .
+                    docker build -t $APP_NAME:$REACT_APP_VERSION .
                 '''
             }
         }
@@ -67,7 +68,6 @@ pipeline {
                         #yum install jq -y
                         #aws s3 sync build s3://$AWS_S3_BUCKET
                         LATEST_TD_REVISION=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json | jq '.taskDefinition.revision')
-                        echo $LATEST_TD_REVISION
                         aws ecs update-service --cluster $AWS_ECS_CLUSTER --service $AWS_ECS_SERVICE_PROD --task-definition $AWS_ECS_TD_PROD:$LATEST_TD_REVISION
                         aws ecs wait services-stable --cluster $AWS_ECS_CLUSTER --services $AWS_ECS_SERVICE_PROD
                     '''
