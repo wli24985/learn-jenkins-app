@@ -5,6 +5,10 @@ pipeline {
             steps {
                 sh 'docker build -f CICD/Dockerfile-playwright -t my-plywright .'
                 sh 'docker build -f CICD/Dockerfile-aws-cli -t my-aws-cli .'
+                sh '''
+                    pwd
+                    ls -la
+                '''
             }
         }
     }

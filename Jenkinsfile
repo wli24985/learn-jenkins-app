@@ -14,18 +14,12 @@ pipeline {
         stage('Build') {
             agent {
                 docker {
-                    image 'node:18-alpine' // was node:18
+                    image 'node:18-alpine'
                     reuseNode true
                     //args '-u root:root'
                 }
             }
             steps {
-                // sh '''
-                //     # for cleaning build files
-                //     rm -rf '/var/jenkins_home/workspace/learn jekins app/build'
-                //     rm -rf "/var/jenkins_home/workspace/learn jekins app/node_modules"
-                //     #npm cache clean --force
-                // '''
                 sh '''
                     ls -la
                     node --version
@@ -33,6 +27,7 @@ pipeline {
                     npm ci
                     npm run build
                     ls -la
+                    echo "BUILD app Completed"
                 '''
             }
         }
@@ -63,9 +58,6 @@ pipeline {
                     args "-u root --entrypoint=''"
                 }
             }
-            // environment {
-            //     AWS_S3_BUCKET = 'learn-jenkins-wenyi'
-            // }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'my-awsID', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
