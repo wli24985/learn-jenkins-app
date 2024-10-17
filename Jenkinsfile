@@ -9,6 +9,36 @@ pipeline {
         AWS_ECS_TD_PROD = 'LearnJenkinsWenyi-TaskDefinition-Prod'
     }
     stages {
+        stage('Build') {
+            agent {
+                docker {
+                    image 'node:18-alpine' // was node:18
+                    reuseNode true
+                    //args '-u root:root'
+                }
+            }
+            steps {
+                // sh '''
+                //     # for cleaning build files
+                //     rm -rf '/var/jenkins_home/workspace/learn jekins app/build'
+                //     rm -rf "/var/jenkins_home/workspace/learn jekins app/node_modules"
+                //     #npm cache clean --force
+                // '''
+                sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la
+                '''
+            }
+        }
+        stage('Build Docker image') {
+            steps {
+                sh 'docker build -t mayjekinsapp .'
+            }
+        }
         stage('Deploy to AWS') {
             agent {
                 docker {
@@ -36,31 +66,7 @@ pipeline {
             }
         }
         
-        stage('Build') {
-            agent {
-                docker {
-                    image 'node:18-alpine' // was node:18
-                    reuseNode true
-                    //args '-u root:root'
-                }
-            }
-            steps {
-                // sh '''
-                //     # for cleaning build files
-                //     rm -rf '/var/jenkins_home/workspace/learn jekins app/build'
-                //     rm -rf "/var/jenkins_home/workspace/learn jekins app/node_modules"
-                //     #npm cache clean --force
-                // '''
-                sh '''
-                    ls -la
-                    node --version
-                    npm --version
-                    npm ci
-                    npm run build
-                    ls -la
-                '''
-            }
-        }
+        
     }
     post {
         always {
