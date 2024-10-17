@@ -37,14 +37,14 @@ pipeline {
         stage('Build Docker image') {
             agent {
                 docker {
-                    image 'amazon/aws-cli:latest'
+                    image 'my-aws-cli'
                     reuseNode true
                     args "-u root -v /var/run/docker.sock:/var/run/docker.sock --entrypoint=''"
                 }
             }
             steps {
                 sh '''
-                    amazon-linux-extras install docker
+                    #amazon-linux-extras install docker
                     docker build -t myjekinsapp .
                 '''
             }
@@ -52,7 +52,7 @@ pipeline {
         stage('Deploy to AWS') {
             agent {
                 docker {
-                    image 'amazon/aws-cli:latest'
+                    image 'my-aws-cli'
                     reuseNode true
                     args "-u root --entrypoint=''"
                 }
@@ -64,7 +64,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'my-awsID', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
                         aws --version
-                        yum install jq -y
+                        #yum install jq -y
                         #aws s3 sync build s3://$AWS_S3_BUCKET
                         LATEST_TD_REVISION=$(aws ecs register-task-definition --cli-input-json file://aws/task-definition-prod.json | jq '.taskDefinition.revision')
                         echo $LATEST_TD_REVISION

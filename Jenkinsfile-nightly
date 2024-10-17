@@ -3,7 +3,8 @@ pipeline {
     stages {
         stage('Build Docker image') {
             steps {
-                sh 'docker build -f CICD/Dockerfile -t my-plywright .'
+                sh 'docker build -f CICD/Dockerfile-playwright -t my-plywright .'
+                sh 'docker build -f CICD/Dockerfile-aws-cli -t my-aws-cli .'
             }
         }
     }
