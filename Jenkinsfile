@@ -26,7 +26,7 @@ pipeline {
                     npm --version
                     npm ci
                     npm run build
-                    ls -la
+                    ls -la build
                     echo "BUILD app Completed"
                 '''
             }
@@ -43,6 +43,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'my-awsID', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
                     sh '''
                         #amazon-linux-extras install docker
+                        ls -la build
                         docker build -t $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION .
                         aws ecr get-login-password | docker login --username AWS --password-stdin $AWS_DOCKER_REGISTRY
                         docker push $AWS_DOCKER_REGISTRY/$APP_NAME:$REACT_APP_VERSION
