@@ -1,0 +1,27 @@
+{
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "family": "LearnJenkinsWenyi-TaskDefinition-Prod",
+    "containerDefinitions": [
+        {
+            "name": "LearnJenkinsApp",
+            "image": "921738114306.dkr.ecr.us-east-2.amazonaws.com/myjekinsapp:#APP_VERSION#",
+            "portMappings": [
+                {
+                    "name": "ngnix-80-tcp",
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp",
+                    "appProtocol": "http"
+                }
+            ],
+            "essential": true
+        }
+    ],
+    "volumes": [],
+    "networkMode": "awsvpc",
+    "memory": ".5 GB",
+    "cpu": ".25 vCPU",
+    "executionRoleArn": "arn:aws:iam::921738114306:role/ecsTaskExecutionRole"
+}
